@@ -1,6 +1,4 @@
-<template>
-	<div id="home">主页</div>
-</template>
+<template></template>
 
 <script>
 export default {};

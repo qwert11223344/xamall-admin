@@ -1,5 +1,5 @@
 <template>
-	<div id="home">主页</div>
+	<div id="login">123</div>
 </template>
 
 <script>

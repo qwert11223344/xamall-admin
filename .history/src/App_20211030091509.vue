@@ -7,6 +7,5 @@
 <script>
 export default {};
 </script>
-<style lang="scss" scoped>
-@import url("assets/css/base.scss");
+<style lang="scss">
 </style>
