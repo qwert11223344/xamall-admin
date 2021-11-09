@@ -1,0 +1,36 @@
+<template>
+	<nav>
+		<span>小爱商城后台管理</span>
+		<span>欢迎您,{{ name }}</span>
+		<span @click="logout">退出</span>
+	</nav>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			name: "",
+		};
+	},
+	methods: {
+		logout() {
+			window.localStorage.removeItem("admin-token");
+			window.localStorage.removeItem("admin");
+		},
+	},
+};
+</script>
+
+<style>
+nav {
+	height: 50px;
+	width: 100vw;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: rgba(100, 100, 100, 0.8);
+	color: #f3f3f3;
+	padding: 0 30px;
+}
+</style>
