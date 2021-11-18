@@ -45,10 +45,10 @@
 								<span>{{ item.row.prod_list[0].prod_id }}</span>
 							</el-form-item>
 							<el-form-item label="商品单价：">
-								<span>￥{{ item.row.prod_list[0].prod_price }}</span>
+								<span>{{ item.row.prod_list[0].prod_price }}</span>
 							</el-form-item>
 							<el-form-item label="商品数量：">
-								<span>x{{ item.row.prod_list[0].prod_count }}</span>
+								<span>{{ item.row.prod_list[0].prod_count }}</span>
 							</el-form-item>
 							<el-form-item label="商品：">
 								<span

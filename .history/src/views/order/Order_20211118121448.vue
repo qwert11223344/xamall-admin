@@ -33,35 +33,31 @@
 				<!-- <el-table-column label="id" prop="_id"></el-table-column> -->
 				<el-table-column type="expand">
 					<template slot-scope="item">
-						<el-form
-							label-position="left"
-							class="demo-table-expand"
-							style="padding-left: 30px"
-						>
-							<el-form-item label="商品名称：">
+						<el-form label-position="left" class="demo-table-expand">
+							<el-form-item label="商品名称">
 								<span>{{ item.row.prod_list[0].prod_title }}</span>
 							</el-form-item>
-							<el-form-item label="商品 ID：">
+							<el-form-item label="商品 ID">
 								<span>{{ item.row.prod_list[0].prod_id }}</span>
 							</el-form-item>
-							<el-form-item label="商品单价：">
-								<span>￥{{ item.row.prod_list[0].prod_price }}</span>
+							<el-form-item label="商品单价">
+								<span>{{ item.row.prod_list[0].prod_price }}</span>
 							</el-form-item>
-							<el-form-item label="商品数量：">
-								<span>x{{ item.row.prod_list[0].prod_count }}</span>
+							<el-form-item label="商品数量">
+								<span>{{ item.row.prod_list[0].prod_count }}</span>
 							</el-form-item>
-							<el-form-item label="商品：">
+							<el-form-item label="商品">
 								<span
 									><img :src="item.row.prod_list[0].prod_img" alt=""
 								/></span>
 							</el-form-item>
-							<el-form-item label="收货人昵称：">
+							<el-form-item label="收货人昵称">
 								<span>{{ item.row.address_list[0].nick_name }}</span>
 							</el-form-item>
-							<el-form-item label="收货人电话：">
+							<el-form-item label="收货人电话">
 								<span>{{ item.row.address_list[0].tel }}</span>
 							</el-form-item>
-							<el-form-item label="收获地址：">
+							<el-form-item label="收获地址">
 								<span
 									>{{ item.row.address_list[0].province
 									}}{{ item.row.address_list[0].downtown_area
@@ -69,14 +65,14 @@
 									}}{{ item.row.address_list[0].street }}</span
 								>
 							</el-form-item>
-							<el-form-item label="物流公司：">
+							<el-form-item label="物流公司">
 								<span>{{ item.row.express }}</span>
 							</el-form-item>
-							<el-form-item label="物流单号：">
+							<el-form-item label="物流单号">
 								<span>{{ item.row.express_num }}</span>
 							</el-form-item>
-							<el-form-item label="修改时间：">
-								<span>{{ item.row.updated | updateTime }}</span>
+							<el-form-item label="修改时间">
+								<span>{{ item.row.updated }}</span>
 							</el-form-item>
 						</el-form>
 					</template>
@@ -87,41 +83,28 @@
 					prop="order_num"
 				></el-table-column>
 				<el-table-column
-					width="120"
-					align="center"
-					label="订单总金额(元)"
+					label="订单总金额"
 					prop="total_price"
 				></el-table-column>
-				<el-table-column
-					width="100"
-					align="center"
-					label="订单状态"
-					prop="state"
-					:formatter="showState"
-				>
+				<el-table-column label="订单状态" prop="state" :formatter="showState">
 				</el-table-column>
 				<el-table-column
-					width="110"
-					align="center"
 					label="付款类型"
 					prop="pay_type"
 					:formatter="payType"
 					min-width="50px"
 				></el-table-column>
 				<el-table-column
-					width="80"
-					align="center"
 					label="用户id"
 					prop="user_id"
 					min-width="50px"
 				></el-table-column>
 				<el-table-column
-					align="center"
 					label="创建时间"
 					prop="created"
 					:formatter="showTime"
 				></el-table-column>
-				<el-table-column width="120" align="center" label="操作">
+				<el-table-column label="操作">
 					<template slot-scope="scope">
 						<!-- Tooltip文字提示 -->
 						<el-tooltip
@@ -277,11 +260,6 @@ export default {
 
 	created() {
 		this.getOrderList();
-	},
-	filters: {
-		updateTime(val) {
-			return formatDate(new Date(val * 1), "yyyy-MM-dd hh:mm:ss");
-		},
 	},
 	methods: {
 		async getOrderList() {

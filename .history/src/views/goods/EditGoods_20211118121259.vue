@@ -79,7 +79,7 @@
 					prop="product_capacity"
 				></el-table-column>
 				<el-table-column
-					width="80"
+					width="60"
 					align="center"
 					label="可用状态"
 					prop="state"
@@ -94,7 +94,7 @@
 						</el-switch>
 					</template>
 				</el-table-column>
-				<el-table-column width="120" align="center" label="操作">
+				<el-table-column align="center" label="操作">
 					<template slot-scope="scope">
 						<!-- Tooltip文字提示 -->
 						<el-tooltip

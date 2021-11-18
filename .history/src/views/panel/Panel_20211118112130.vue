@@ -33,30 +33,20 @@
 
 			<!-- 列表区域 -->
 			<el-table :data="PanelList" border stripe>
-				<el-table-column
-					width="60"
-					align="center"
-					label="id"
-					prop="id"
-				></el-table-column>
+				<el-table-column align="center" label="id" prop="id"></el-table-column>
 				<!-- <el-table-column label="分类id" prop="cat_id"></el-table-column> -->
 				<el-table-column
 					align="center"
+					width="60"
 					label="版块名称"
 					prop="name"
 				></el-table-column>
 				<el-table-column
 					align="center"
-					width="80"
 					label="版块类型"
 					prop="type"
 				></el-table-column>
-				<el-table-column
-					width="80"
-					align="center"
-					label="可用状态"
-					prop="state"
-				>
+				<el-table-column align="center" label="可用状态" prop="state">
 					<template slot-scope="scope">
 						<el-switch
 							:active-value="1"
@@ -67,7 +57,7 @@
 						</el-switch>
 					</template>
 				</el-table-column>
-				<el-table-column width="150" align="center" label="操作">
+				<el-table-column align="center" label="操作">
 					<template slot-scope="scope">
 						<!-- Tooltip文字提示 -->
 						<el-tooltip

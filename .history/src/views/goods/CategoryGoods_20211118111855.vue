@@ -1,73 +1,60 @@
 <template>
-	<div id="panel">
+	<div class="cate-goods">
 		<!-- 面包屑导航区域 -->
-		<el-breadcrumb separator-class="el-icon-arrow-right" class="panel-header">
+		<el-breadcrumb separator-class="el-icon-arrow-right" class="cate-header">
 			<el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-			<el-breadcrumb-item>版块管理</el-breadcrumb-item>
-			<el-breadcrumb-item>所有版块</el-breadcrumb-item>
+			<el-breadcrumb-item>商品管理</el-breadcrumb-item>
+			<el-breadcrumb-item>分类管理</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<!-- 卡片视图区域 -->
 		<el-card>
 			<!-- 搜索与添加区域 -->
 			<el-row :gutter="20" class="search">
-				<el-col :span="6">
-					<el-input
-						placeholder="请输入版块名称"
+				<el-col :span="8">
+					<el-select v-model="queryInfo.query" placeholder="请选择分类" @change="_getCategoryGoods">
+					 <el-option
+      				v-for="item in category"
+      				:key="item.id"
+      				:label="item.name"
+      				:value="item.id">
+   				 </el-option>
+  				</el-select>
+					<!-- <el-input
+						placeholder="请输入分类名"
 						v-model="queryInfo.query"
 						clearable
-						@clear="_getAllPanel"
-						@keyup.enter.native="_findPanel"
+						@clear="_getCategory"
+						@keyup.enter.native="_getCategoryGoods"
 					>
 						<el-button
 							slot="append"
 							icon="el-icon-search"
-							@click="_findPanel"
+							@click="_getCategoryGoods"
 						></el-button>
-					</el-input>
+					</el-input> -->
 				</el-col>
 				<el-col :span="4">
-					<el-button type="primary" @click="addDialog()">添加版块</el-button>
+					<el-button type="primary" @click="addDialog()">添加分类</el-button>
 				</el-col>
 			</el-row>
 
 			<!-- 列表区域 -->
-			<el-table :data="PanelList" border stripe>
-				<el-table-column
-					width="60"
-					align="center"
-					label="id"
-					prop="id"
-				></el-table-column>
-				<!-- <el-table-column label="分类id" prop="cat_id"></el-table-column> -->
-				<el-table-column
-					align="center"
-					label="版块名称"
-					prop="name"
-				></el-table-column>
-				<el-table-column
-					align="center"
-					width="80"
-					label="版块类型"
-					prop="type"
-				></el-table-column>
-				<el-table-column
-					width="80"
-					align="center"
-					label="可用状态"
-					prop="state"
-				>
+			<el-table  :data="sortList" border stripe>
+				<el-table-column align="center" label="id" prop="id"></el-table-column>
+				<el-table-column align="center" label="分类名称" prop="name"></el-table-column>
+				<!-- <el-table-column label="是否冻结" prop="state">
 					<template slot-scope="scope">
 						<el-switch
 							:active-value="1"
 							:inactive-value="0"
 							v-model="scope.row.state"
-							@change="_updatePanelOne(scope.row)"
+							@change="sortStatusChanged(scope.row)"
 						>
 						</el-switch>
-					</template>
+					</template> -->
 				</el-table-column>
-				<el-table-column width="150" align="center" label="操作">
+				<el-table-column align="center" label="操作">
 					<template slot-scope="scope">
 						<!-- Tooltip文字提示 -->
 						<el-tooltip
@@ -93,7 +80,7 @@
 								icon="el-icon-delete"
 								circle
 								size="mini"
-								@click="_delPanel(scope.row.id)"
+								@click="delDialog(scope.row)"
 							></el-button>
 						</el-tooltip>
 					</template>
@@ -105,7 +92,7 @@
 				@size-change="handleSizeChange"
 				@current-change="handleCurrentChange"
 				:current-page="queryInfo.num"
-				:page-sizes="[4, 8, 12, 20]"
+				:page-sizes="[1, 2, 3]"
 				:page-size="queryInfo.size"
 				layout="total, sizes, prev, pager, next, jumper"
 				:total="total"
@@ -113,11 +100,11 @@
 			</el-pagination>
 		</el-card>
 
-		<!-- 添加版块的对话框 -->
+		<!-- 添加商品的对话框 -->
 		<el-dialog
 			:title="title"
 			:visible.sync="addDialogVisible"
-			width="20%"
+			width="50%"
 			@close="addDialogClosed"
 		>
 			<!-- 内容主体区域 -->
@@ -127,17 +114,13 @@
 				:rules="addFormRules"
 				label-width="70px"
 			>
-				<el-form-item label="版块名称" prop="name">
+				<el-form-item label="分类名称" prop="name">
 					<el-input v-model="addForm.name"></el-input>
-				</el-form-item>
-
-				<el-form-item label="版块类型" prop="type">
-					<el-input v-model="addForm.type"></el-input>
 				</el-form-item>
 			</el-form>
 			<!-- 底部区域 -->
 			<span slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="_addPanel">确 定</el-button>
+				<el-button type="primary" @click="addSort">确 定</el-button>
 				<el-button @click="addDialogVisible = false">取 消</el-button>
 			</span>
 		</el-dialog>
@@ -146,138 +129,153 @@
 
 <script>
 import {
-	getAllPanel,
-	addPanel,
-	findPanel,
-	updatePanelOne,
-	updatePanel,
-	updatePanelContent,
-	delPanel,
-} from "api/panel.js";
-
+	getCategory,
+	getCategoryLimit,
+	addCategory,
+	updateCategory,
+	delCategory,
+	getCategoryGoods,
+} from "api/category.js";
 export default {
 	data() {
 		return {
-			//获取商品列表的参数对象
+			//获取分类列表的参数对象
 			queryInfo: {
 				query: "",
 				//当前的页数
 				num: 1,
 				///每页的数量
-				size: 8,
+				size: 3,
 			},
-			PanelList: [],
+			sortList: [],
+			category: [],
 			total: 0,
 			//表单名称
 			title: "",
-			itemFlag: false,
+			sortFlag: false,
 			//控制添加对话框的显示和隐藏
 			addDialogVisible: false,
 			// 登录表单的数据绑定对象
 			addForm: {
 				id: "",
 				name: "",
-				type: "",
 			},
 			// 添加表单的验证规则
 			addFormRules: {},
 		};
 	},
 	created() {
-		this._getAllPanel();
+		this._getCategory();
 	},
 	methods: {
-		async _getAllPanel() {
-			let res = await getAllPanel();
-			if (res.success === false) {
-				return this.$message.error("获取版块列表失败！");
+		async _getCategory() {
+			let total = await getCategory();
+
+			let res = await getCategoryLimit(this.queryInfo);
+			if (res.success !== true) {
+				return this.$message.error("获取分类列表失败！");
 			}
-			this.PanelList = res.data;
-			this.total = res.data.length;
-		},
-		//搜索商品
-		async _findPanel() {
-			let res = await findPanel(this.queryInfo.query);
-			this.PanelList = res.data;
-			this.total = res.data.length;
+			this.sortList = res.data;
+			this.total = total.data.length;
+			this.category = total.data;
 		},
 		//监听 pagesize 改变的事件
 		handleSizeChange(newSize) {
 			this.queryInfo.size = newSize;
-			this._getAllPanel();
+			this._getCategory();
 		},
 		//监听 页码值 改变的事件
 		handleCurrentChange(newNum) {
 			this.queryInfo.num = newNum;
-			this._getAllPanel();
+			this._getCategory();
 		},
-		//监听 修改版块单条信息
-		async _updatePanelOne(panelInfo) {
-			let params = {
-				id: panelInfo.id,
-				column: "state",
-				value: panelInfo.state,
-			};
-			console.log(params);
-			let res = await updatePanelOne(params);
-			if (res.success === true) {
-				this.$message.success(res.message);
-			} else {
-				this.$message.error(res.message);
-			}
+		//根据cid获取商品
+		async _getCategoryGoods(cid) {
+			let res = await getCategoryGoods(cid);
+			this.$router.push({
+				name: "EditGoods",
+				params: {
+					goodsList: res.data,
+				},
+			});
 		},
 
-		//监听 添加商品对话框的关闭事件（重置表单）
+		//监听 可用状态改变的事件
+		async sortStatusChanged(sortInfo) {
+			let params = {
+				column: "state",
+				value: sortInfo.state,
+				id: sortInfo.id,
+			};
+			let res = await updateCategory(params);
+			if (res.success === true) {
+				this.$message.success("冻结成功");
+			} else {
+				this.$message.error("冻结失败");
+			}
+			this._getCategory();
+		},
+		//监听 添加分类对话框的关闭事件（重置表单）
 		addDialogClosed() {
 			this.$refs.addFormRef.resetFields();
-			//隐藏添加商品的对话框
-			this.addDialogVisible = false;
 		},
-		// 点击按钮 添加新版块
-		async _addPanel() {
+		// 点击按钮 添加新分类
+		addSort() {
 			this.$refs.addFormRef.validate(async (valid) => {
 				if (!valid) return;
-				//表单都合法才向后台发起添加的请求
 				if (this.addForm.id === "") {
-					let res = await addPanel(this.addForm);
+					//添加
+					let res = await addCategory(this.addForm);
 					if (res.success === true) {
 						this.$message.success(res.message);
 					} else {
 						this.$message.error(res.message);
 					}
 				} else {
-					let res = await updatePanel(this.addForm);
+					//修改
+					let params = {
+						column: "name",
+						value: this.addForm.name,
+						id: this.addForm.id,
+					};
+					let res = await updateCategory(params);
 					if (res.success === true) {
 						this.$message.success(res.message);
 					} else {
 						this.$message.error(res.message);
 					}
 				}
-				this.addDialogClosed();
-				this._getAllPanel();
+				//隐藏添加分类的对话框
+				this.addDialogVisible = false;
+				//重置表单
+				this.$refs.addFormRef.resetFields();
+				//重新获取分类信息列表数据
+				this._getCategory();
 			});
 		},
 		// 点击新增按钮
 		addDialog() {
 			//给表单赋值
-			this.title = "添加版块";
-			this.itemFlag = false;
+			this.title = "添加分类";
+			this.sortFlag = false;
 			Object.keys(this.addForm).forEach((v) => (this.addForm[v] = ""));
 			this.addDialogVisible = true;
 		},
-		// 	// 点击修改按钮
-		editDialog(itemInfo) {
+		// 点击修改按钮
+		editDialog(sortInfo) {
 			//给表单赋值
-			this.title = "更新版块";
-			this.itemFlag = true;
+			this.title = "更新分类";
+			this.sortFlag = true;
+			//浅拷贝
+			//this.addForm = memberInfo
 			//使用深拷贝
-			this.addForm = JSON.parse(JSON.stringify(itemInfo));
+			this.addForm = JSON.parse(JSON.stringify(sortInfo));
 			this.addDialogVisible = true;
 		},
-		// 	// 点击删除按钮
-		async _delPanel(id) {
+		// 点击删除按钮
+		async delDialog(id) {
 			//弹框询问是否删除
-			const confirmResult = await this.$confirm("是否删除该商品", "提示", {
+			const confirmResult = await this.$confirm("是否删除该分类", "提示", {
 				confirmButtonText: "确定",
 				cancelButtonText: "取消",
 				type: "warning",
@@ -285,13 +283,13 @@ export default {
 			if (confirmResult != "confirm") {
 				return this.$message.info("已取消删除");
 			}
-			let res = await delPanel({ id });
-			if (res.success != true) {
-				this.$message.error(res.message);
-			} else {
+			let res = await delCategory(id);
+			if (res.success === true) {
 				this.$message.success(res.message);
-				//重新获取版块列表数据
-				this._getAllPanel();
+				//重新获取会员信息列表数据
+				this._getCategory();
+			} else {
+				this.$message.error(res.message);
 			}
 		},
 	},
@@ -299,11 +297,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#panel {
+.cate-goods {
 	min-width: 1320px;
 	max-width: 1500px;
 	padding: 20px;
-	.panel-header {
+	.cate-header {
 		margin-bottom: 10px;
 	}
 	.search {

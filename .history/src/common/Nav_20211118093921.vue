@@ -25,7 +25,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 nav {
 	height: 50px;
 	width: 100vw;
@@ -35,10 +35,7 @@ nav {
 	background: rgba(100, 100, 100, 0.8);
 	color: #f3f3f3;
 	padding: 0 30px;
+	span:last-child {
+	}
 }
-
-/* a {
-	text-decoration: none;
-	color: #000;
-} */
-</style>
+</style>>

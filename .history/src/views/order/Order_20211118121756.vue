@@ -33,11 +33,7 @@
 				<!-- <el-table-column label="id" prop="_id"></el-table-column> -->
 				<el-table-column type="expand">
 					<template slot-scope="item">
-						<el-form
-							label-position="left"
-							class="demo-table-expand"
-							style="padding-left: 30px"
-						>
+						<el-form label-position="left" class="demo-table-expand">
 							<el-form-item label="商品名称：">
 								<span>{{ item.row.prod_list[0].prod_title }}</span>
 							</el-form-item>
@@ -45,10 +41,10 @@
 								<span>{{ item.row.prod_list[0].prod_id }}</span>
 							</el-form-item>
 							<el-form-item label="商品单价：">
-								<span>￥{{ item.row.prod_list[0].prod_price }}</span>
+								<span>{{ item.row.prod_list[0].prod_price }}</span>
 							</el-form-item>
 							<el-form-item label="商品数量：">
-								<span>x{{ item.row.prod_list[0].prod_count }}</span>
+								<span>{{ item.row.prod_list[0].prod_count }}</span>
 							</el-form-item>
 							<el-form-item label="商品：">
 								<span
@@ -76,7 +72,7 @@
 								<span>{{ item.row.express_num }}</span>
 							</el-form-item>
 							<el-form-item label="修改时间：">
-								<span>{{ item.row.updated | updateTime }}</span>
+								<span>{{ item.row.updated }}</span>
 							</el-form-item>
 						</el-form>
 					</template>
@@ -277,11 +273,6 @@ export default {
 
 	created() {
 		this.getOrderList();
-	},
-	filters: {
-		updateTime(val) {
-			return formatDate(new Date(val * 1), "yyyy-MM-dd hh:mm:ss");
-		},
 	},
 	methods: {
 		async getOrderList() {

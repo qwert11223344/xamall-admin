@@ -36,9 +36,10 @@ nav {
 	color: #f3f3f3;
 	padding: 0 30px;
 }
-
-/* a {
-	text-decoration: none;
+span:last-child {
 	color: #000;
-} */
+}
+a {
+	text-decoration: none;
+}
 </style>

@@ -37,8 +37,8 @@ nav {
 	padding: 0 30px;
 }
 
-/* a {
+a {
 	text-decoration: none;
 	color: #000;
-} */
+}
 </style>

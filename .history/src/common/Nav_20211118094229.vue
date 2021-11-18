@@ -21,6 +21,7 @@ export default {
 	},
 	created() {
 		this.name = window.localStorage.getItem("admin");
+		console.log(this.name);
 	},
 };
 </script>
