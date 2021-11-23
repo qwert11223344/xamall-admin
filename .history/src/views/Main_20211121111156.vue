@@ -1,0 +1,142 @@
+<template>
+	<div class="main">
+		<el-row :gutter="30" style="width: 1200px; margin-bottom: 20px">
+			<el-col
+				:span="6"
+				v-for="(infor, i) in inforCardData"
+				:key="`infor-${i}`"
+				style="height: 120px; padding-bottom: 10px"
+			>
+				<info-card shadow :color="infor.color">
+					<template #icon>
+						<i :class="infor.icon"></i>
+					</template>
+					<count-to :end="infor.count" count-class="count-style" />
+					<p class="info-title">{{ infor.title }}</p>
+				</info-card>
+			</el-col>
+		</el-row>
+		<el-row>
+			<el-col :span="8">
+				<echarts
+					type="pie"
+					:data="listitem"
+					id="homeCharts"
+					text="商品种类分析图"
+					desc="商品数量"
+					width="400px"
+					height="500px"
+				/>
+			</el-col>
+			<el-col :span="16">
+				<el-calendar>
+					<template slot="dateCell" slot-scope="{ date, data }">
+						<p :class="data.isSelected ? 'is-selected' : ''" class="cell-data">
+							{{ data.day.split("-").slice(2)[0] }}
+							{{ data.isSelected ? "✔️" : "" }}
+						</p>
+					</template>
+				</el-calendar>
+			</el-col>
+		</el-row>
+	</div>
+</template>
+
+<script>
+import CountTo from "components/content/countto/CountTo.vue";
+import InfoCard from "components/content/infocard/InfoCard.vue";
+import Echarts from "common/Echarts.vue";
+
+import { getAllMember } from "api/member.js";
+import { getAllGoods } from "api/goods.js";
+import { getOrderToday } from "api/order.js";
+import { getNav } from "api/category.js";
+export default {
+	data() {
+		return {
+			memberNum: 0,
+			goodsNum: 0,
+			orderTodayNum: 0,
+			orderTodayMoney: 0,
+			inforCardData: [],
+			listitem: [],
+		};
+	},
+	components: {
+		Echarts,
+		CountTo,
+		InfoCard,
+	},
+	async created() {
+		let resMember = await getAllMember();
+		let resGoods = await getAllGoods();
+		let resOrderToday = await getOrderToday();
+		console.log(resOrderToday);
+		this.memberNum = parseInt(resMember.data);
+		this.goodsNum = resGoods.data.length;
+		this.orderTodayNum = resOrderToday.data.length;
+		this.inforCardData = [
+			{
+				title: "会员数量",
+				icon: "el-icon-user-solid",
+				count: this.memberNum,
+				color: "#2d8cf0",
+			},
+			{
+				title: "商品总量",
+				icon: "el-icon-s-goods",
+				count: this.goodsNum,
+				color: "#19be6b",
+			},
+			{
+				title: "日销量",
+				icon: "el-icon-document",
+				count: this.orderTodayNum,
+				color: "#ff9900",
+			},
+			{
+				title: "当日营业额",
+				icon: "md-share",
+				count: this.orderTodayMoney,
+				color: "#ed3f14",
+			},
+		];
+		let resCategory = await getNav();
+		let navlist = resCategory.data.list;
+		let item = [];
+		for (let i in navlist) {
+			let obj = {};
+			obj.name = navlist[i].name;
+			obj.value = resCategory.data[i].length;
+			item.push(obj);
+		}
+		this.listitem = item;
+	},
+};
+</script>
+
+<style lang="less" scoped>
+.main {
+	padding: 30px 50px;
+}
+.count-style {
+	font-size: 50px;
+}
+.is-selected {
+	color: #1989fa;
+}
+/deep/ .cell-data {
+	display: flex;
+	height: 100%;
+	font-size: 18px;
+	font-weight: 600;
+	justify-content: center;
+	align-items: center;
+}
+/deep/ .el-calendar-day {
+	height: 60px;
+}
+.info-title {
+	font-size: 14px;
+}
+</style>
